@@ -13,12 +13,12 @@ export const generateSchema = () => {
     },
     "author": {
       "@type": "Person",
-      "name": "Arthur Reira",
+      "name": "Arthur ferreira",
       "url": "https://arthurreira.dev"
     },
     "creator": {
       "@type": "Person",
-      "name": "Arthur Reira"
+      "name": "Arthur ferreira"
     },
     "datePublished": "2025-01-22",
     "inLanguage": "en-US",
