@@ -2,7 +2,7 @@ import { statesData, getStateName, getRegionName } from 'br-state-flags';
 import * as Flags from 'br-state-flags';
 import { Building2, Clock, Landmark, ShoppingCart, Globe, Briefcase, TrendingUp, BarChart3 } from 'lucide-react';
 import { useLanguage } from '../lib/i18n/language-context';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { ChartContainer, ChartTooltip } from '../components/ui/chart';
 
 export default function BusinessExamples() {
