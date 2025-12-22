@@ -103,7 +103,7 @@ export default function Navbar() {
             </button>
 
             <a
-              href="https://github.com"
+              href="https://github.com/arthurreira/br-state-flags"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2.5 text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-xl transition-all hover:scale-110 shadow-sm"
