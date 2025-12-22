@@ -5,7 +5,7 @@ An interactive map application showcasing Brazil's states and their flags.
 <details>
   <summary><strong>Preview the interactive demo</strong></summary>
   <a href="https://br-state-flags-demo.arthurreira.dev/#/">
-    <img src="public/favicon.svg" alt="Brazil State Explorer preview" width="160" />
+    <img src="src/assets/br-state-flags-demo.arthurreira.dev_.png" alt="Brazil State Explorer preview" width="720" />
   </a>
   <p><a href="https://br-state-flags-demo.arthurreira.dev/#/">Open the demo</a> and explore all 27 flags.</p>
 </details>
@@ -13,7 +13,7 @@ An interactive map application showcasing Brazil's states and their flags.
 <details>
   <summary><strong>Preview an alternate view</strong></summary>
   <a href="https://br-state-flags-demo.arthurreira.dev/#/">
-    <img src="public/favicon.svg" alt="Alternate layout preview" width="160" />
+    <img src="src/assets/br-state-flags-demo.arthurreira.dev_%20%281%29.png" alt="Alternate layout preview" width="720" />
   </a>
   <p><a href="https://br-state-flags-demo.arthurreira.dev/#/">Open the demo</a> to switch layouts and props.</p>
 </details>
@@ -21,7 +21,7 @@ An interactive map application showcasing Brazil's states and their flags.
 <details>
   <summary><strong>Preview the Finnish locale</strong></summary>
   <a href="https://br-state-flags-demo.arthurreira.dev/#/">
-    <img src="public/favicon.svg" alt="Finnish locale preview" width="160" />
+    <img src="src/assets/br-state-flags-demo.arthurreira.dev_%20fi.png" alt="Finnish locale preview" width="720" />
   </a>
   <p><a href="https://br-state-flags-demo.arthurreira.dev/#/">Open the demo</a> and toggle to Finnish.</p>
 </details>
