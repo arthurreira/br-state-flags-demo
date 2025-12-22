@@ -55,7 +55,7 @@ const DottedMapView: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-96 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200 p-6">
+    <div className="w-full h-96 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200 p-5">
       <div
         dangerouslySetInnerHTML={{ __html: dotted.getSVG({ color: '#3B82F6', radius: 6 }) }}
         className="w-full h-full flex items-center justify-center"
