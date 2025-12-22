@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /assets/
+
+# Crawl delay
+Crawl-delay: 1
+
+Sitemap: https://br-state-flags-demo.arthurreira.dev/sitemap.xml

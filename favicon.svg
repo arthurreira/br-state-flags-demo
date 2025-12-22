@@ -1,0 +1,13 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Green background (Brazilian flag color) -->
+  <rect width="100" height="100" fill="#009c3b" rx="10"/>
+  
+  <!-- Yellow diamond -->
+  <polygon points="50,15 85,50 50,85 15,50" fill="#ffcd00"/>
+  
+  <!-- Blue circle (center) -->
+  <circle cx="50" cy="50" r="20" fill="#002776"/>
+  
+  <!-- White text -->
+  <text x="50" y="58" text-anchor="middle" font-size="24" font-weight="bold" fill="white" font-family="Arial, sans-serif">BR</text>
+</svg>
