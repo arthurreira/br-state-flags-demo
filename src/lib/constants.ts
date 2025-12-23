@@ -19,4 +19,12 @@ export const REGIONS_CONFIG = {
     color: 'var(--destructive)',
     bgClass: 'bg-destructive/20 text-destructive border-destructive/50 hover:bg-destructive/30',
   },
-};
+} as const;
+
+/**
+ * Re-export FLAG_VIEWBOXES from the package
+ * 
+ * The br-state-flags package now includes viewBox metadata for all flags.
+ * No workaround needed! 🎉
+ */
+export { FLAG_VIEWBOXES } from 'br-state-flags';

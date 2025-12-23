@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Search, Filter, MapPin, Info, ChevronDown, Map as MapIcon, LayoutGrid, List } from 'lucide-react';
 import DottedMapView from '../dotted-map-view';
 import { statesData } from 'br-state-flags';
-import * as Flags from 'br-state-flags';
 import { REGIONS_CONFIG } from '../../../lib/constants';
+import { resolveFlagComponent } from '../../../lib/flag-resolver';
+import { isValidRegion } from '../../../lib/validation';
 
-// Map package data to component format
+// Map package data to component format - memoized to avoid recalculation
 const STATES_DATA = Object.values(statesData).map(state => ({
   code: state.uf,
   name: state.name,
@@ -16,50 +17,26 @@ const STATES_DATA = Object.values(statesData).map(state => ({
   population: 'N/A' // Population data not available in package
 }));
 
-// Mapping of flag viewBoxes to fix scaling issues in components missing them
-const FLAG_VIEWBOXES: Record<string, string> = {
-  AC: "0 0 500 350",
-  AL: "0 0 175.006 116.671",
-  AM: "0 0 2100 1500",
-  AP: "0 0 1000 700",
-  BA: "0 0 1500 1000",
-  CE: "-200 -140 400 280",
-  DF: "0 0 1453.846 1050",
-  ES: "0 0 1320 924",
-  GO: "0 0 560 392",
-  MA: "0 0 1350 900",
-  MG: "0 0 5120 3072",
-  MS: "0 0 1000 700",
-  MT: "0 0 2000 1400",
-  PA: "0 0 900 600",
-  PB: "0 0 6000 4200",
-  PE: "0 0 540 360",
-  PI: "0 0 1950 1300",
-  PR: "0 0 2500 1748",
-  RJ: "-1000 -700 2000 1400",
-  RN: "0 0 900 600",
-  RO: "-1000 -700 2000 1400",
-  RR: "0 0 2000 1400",
-  RS: "-1000 -700 2000 1400",
-  SC: "-418 -304 836 608",
-  SE: "0 0 1000 700",
-  SP: "0 0 1950 1300",
-  TO: "0 0 20 14"
-};
-
 // Reusable components
-const RegionBadge = ({ region, className = '' }: { region: string; className?: string }) => {
-  const config = REGIONS_CONFIG[region as keyof typeof REGIONS_CONFIG];
+const RegionBadge = memo(({ region, className = '' }: { region: string; className?: string }) => {
+  const config = isValidRegion(region) ? REGIONS_CONFIG[region as keyof typeof REGIONS_CONFIG] : null;
   return (
     <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${config?.bgClass || 'bg-gray-100 text-gray-800'} ${className}`}>
       {region}
     </span>
   );
-};
+});
+RegionBadge.displayName = 'RegionBadge';
 
-const StateCard = ({ state, isSelected, onClick }: { state: any; isSelected: boolean; onClick: () => void }) => {
-  const FlagComponent = (Flags as any)[state.code];
-  const flagViewBox = FLAG_VIEWBOXES[state.code];
+interface StateCardProps {
+  state: typeof STATES_DATA[number];
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+const StateCard = memo(({ state, isSelected, onClick }: StateCardProps) => {
+  const resolution = resolveFlagComponent(state.code);
+  const { component: FlagComponent, viewBox: flagViewBox } = resolution || { component: null, viewBox: undefined, isValid: false };
 
   return (
     <div
@@ -104,7 +81,8 @@ const StateCard = ({ state, isSelected, onClick }: { state: any; isSelected: boo
       )}
     </div>
   );
-};
+});
+StateCard.displayName = 'StateCard';
 
 const FilterPanel = ({ selectedRegion, onRegionChange, searchQuery, onSearchChange }: { selectedRegion: string | null; onRegionChange: (region: string | null) => void; searchQuery: string; onSearchChange: (query: string) => void }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -164,14 +142,19 @@ const FilterPanel = ({ selectedRegion, onRegionChange, searchQuery, onSearchChan
   );
 };
 
-const StatsPanel = ({ states, selectedRegion }: { states: any[]; selectedRegion: string | null }) => {
+interface StatsPanelProps {
+  states: typeof STATES_DATA;
+  selectedRegion: string | null;
+}
+
+const StatsPanel = memo(({ states, selectedRegion }: StatsPanelProps) => {
   const stats = useMemo(() => {
     const filtered = selectedRegion
-      ? states.filter((s: any) => s.region === selectedRegion)
+      ? states.filter(s => s.region === selectedRegion)
       : states;
 
     const regionCounts: Record<string, number> = {};
-    states.forEach((state: any) => {
+    states.forEach(state => {
       regionCounts[state.region] = (regionCounts[state.region] || 0) + 1;
     });
 
@@ -198,7 +181,8 @@ const StatsPanel = ({ states, selectedRegion }: { states: any[]; selectedRegion:
       </div>
     </div>
   );
-};
+});
+StatsPanel.displayName = 'StatsPanel';
 
 export default function BrazilianStatesMap() {
   const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -216,12 +200,15 @@ export default function BrazilianStatesMap() {
     });
   }, [searchQuery, selectedRegion]);
 
-  const selectedStateData = selectedState
-    ? STATES_DATA.find(s => s.code === selectedState)
-    : null;
+  const selectedStateData = useMemo(() => {
+    return selectedState ? STATES_DATA.find(s => s.code === selectedState) : null;
+  }, [selectedState]);
 
-  const SelectedFlagComponent = selectedStateData ? (Flags as any)[selectedStateData.code] : null;
-  const selectedFlagViewBox = selectedStateData ? FLAG_VIEWBOXES[selectedStateData.code] : null;
+  const flagResolution = useMemo(() => {
+    return selectedStateData ? resolveFlagComponent(selectedStateData.code) : null;
+  }, [selectedStateData]);
+  
+  const { component: SelectedFlagComponent, viewBox: selectedFlagViewBox } = flagResolution || { component: null, viewBox: undefined, isValid: false };
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">

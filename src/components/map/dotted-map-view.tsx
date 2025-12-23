@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Dotted from 'dotted-map';
 
-const DottedMapView: React.FC = () => {
-  const dotted = new Dotted({ height: 60, width: 130 });
+/**
+ * Sanitize SVG content by removing potentially dangerous elements and attributes
+ * This is a basic sanitizer - for production, consider using DOMPurify
+ */
+function sanitizeSVG(svgString: string): string {
+  // Remove script tags and event handlers
+  let sanitized = svgString
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/<iframe/gi, '<iframe-disabled');
 
+  // Ensure it's actually SVG
+  if (!sanitized.trim().startsWith('<svg')) {
+    console.warn('[DottedMapView] Invalid SVG content detected');
+    return '';
+  }
+
+  return sanitized;
+}
+
+const DottedMapView: React.FC = () => {
   // Brazilian states coordinates (latitude, longitude)
-  const brazilianStates = [
+  const brazilianStates = useMemo(() => [
     // North
     { lat: -0.28, lng: -51.13 }, // AP
     { lat: 1.38, lng: -61.4 }, // RR
@@ -43,22 +62,30 @@ const DottedMapView: React.FC = () => {
     { lat: -25.68, lng: -49.25 }, // PR
     { lat: -28.15, lng: -52.58 }, // RS
     { lat: -27.17, lng: -50.26 }, // SC
-  ];
+  ], []);
 
-  // Add dots for each state
-  brazilianStates.forEach(state => {
-    dotted.addPin({
-      lat: state.lat,
-      lng: state.lng,
-      svgOptions: { color: '#3B82F6', radius: 6 }
+  const svgContent = useMemo(() => {
+    const dotted = new Dotted({ height: 60, width: 130 });
+
+    // Add dots for each state
+    brazilianStates.forEach(state => {
+      dotted.addPin({
+        lat: state.lat,
+        lng: state.lng,
+        svgOptions: { color: '#3B82F6', radius: 6 }
+      });
     });
-  });
+
+    const rawSVG = dotted.getSVG({ color: '#3B82F6', radius: 6 });
+    return sanitizeSVG(rawSVG);
+  }, [brazilianStates]);
 
   return (
     <div className="w-full h-96 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200 p-5">
       <div
-        dangerouslySetInnerHTML={{ __html: dotted.getSVG({ color: '#3B82F6', radius: 6 }) }}
+        dangerouslySetInnerHTML={{ __html: svgContent }}
         className="w-full h-full flex items-center justify-center"
+        aria-label="Brazilian states map visualization"
       />
     </div>
   );

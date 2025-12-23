@@ -134,6 +134,87 @@ const region = getRegionName('North', 'pt-BR'); // "Norte"`}
                     </CardContent>
                 </Card>
 
+                {/* New Features: v0.1.0 - Type-Safe Utilities */}
+                <Card className="bg-card border-border border-green-500/20 shadow-lg shadow-green-500/5">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Badge variant="default" className="bg-green-600 hover:bg-green-600">v0.1.0 New</Badge>
+                            Type-Safe Flag Utilities
+                        </CardTitle>
+                        <CardDescription>New utilities for type-safe dynamic flag access</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">1. resolveFlagComponent - Full Resolution</h4>
+                            <p className="text-sm text-muted-foreground">Get component, viewBox, and validation in one call</p>
+                            <div className="bg-muted rounded-lg p-4 border border-border overflow-x-auto">
+                                <pre className="text-foreground text-sm font-mono">
+                                    {`import { resolveFlagComponent } from 'br-state-flags';
+
+const { component, viewBox, isValid } = resolveFlagComponent('SP');
+
+if (isValid && component) {
+  return <component viewBox={viewBox} />;
+}`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        <Separator className="bg-border" />
+
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">2. getFlagComponent - Simple Access</h4>
+                            <p className="text-sm text-muted-foreground">Get a flag component directly</p>
+                            <div className="bg-muted rounded-lg p-4 border border-border overflow-x-auto">
+                                <pre className="text-foreground text-sm font-mono">
+                                    {`import { getFlagComponent, FLAG_VIEWBOXES } from 'br-state-flags';
+
+const FlagComponent = getFlagComponent('SP');
+if (FlagComponent) {
+  return <FlagComponent viewBox={FLAG_VIEWBOXES.SP} />;
+}`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        <Separator className="bg-border" />
+
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">3. flagComponents Map</h4>
+                            <p className="text-sm text-muted-foreground">Direct access to all flag components</p>
+                            <div className="bg-muted rounded-lg p-4 border border-border overflow-x-auto">
+                                <pre className="text-foreground text-sm font-mono">
+                                    {`import { flagComponents, FLAG_VIEWBOXES } from 'br-state-flags';
+
+const FlagComponent = flagComponents.SP;
+return <FlagComponent viewBox={FLAG_VIEWBOXES.SP} />;`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        <Separator className="bg-border" />
+
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">4. FLAG_VIEWBOXES Metadata</h4>
+                            <p className="text-sm text-muted-foreground">All viewBox values exported from package</p>
+                            <div className="bg-muted rounded-lg p-4 border border-border overflow-x-auto">
+                                <pre className="text-foreground text-sm font-mono">
+                                    {`import { FLAG_VIEWBOXES } from 'br-state-flags';
+
+// Access viewBox for any state
+const viewBox = FLAG_VIEWBOXES.SP; // "0 0 1950 1300"
+const viewBoxRJ = FLAG_VIEWBOXES.RJ; // "-1000 -700 2000 1400"`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                            <p className="text-sm font-semibold text-green-600 dark:text-green-400 mb-2">✨ All flags now include viewBox attributes!</p>
+                            <p className="text-xs text-muted-foreground">No more workarounds needed. All 27 flags have proper viewBox values built-in.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* API Reference */}
                 <Card className="bg-card border-border">
                     <CardHeader>
@@ -141,6 +222,36 @@ const region = getRegionName('North', 'pt-BR'); // "Norte"`}
                         <CardDescription>{t.docs.api.sub}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">Flag Component Utilities (v0.1.0+)</h4>
+                            <div className="space-y-2">
+                                <div className="bg-muted rounded-lg p-3 border border-border">
+                                    <p className="text-foreground text-sm">
+                                        <span className="text-primary font-bold">resolveFlagComponent(uf: string): FlagResolutionResult</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">Returns component, viewBox, and validation status</p>
+                                </div>
+                                <div className="bg-muted rounded-lg p-3 border border-border">
+                                    <p className="text-foreground text-sm">
+                                        <span className="text-primary font-bold">getFlagComponent(uf: BRStateUF): FlagComponent | null</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">Returns flag component or null if not found</p>
+                                </div>
+                                <div className="bg-muted rounded-lg p-3 border border-border">
+                                    <p className="text-foreground text-sm">
+                                        <span className="text-primary font-bold">flagComponents: Record&lt;BRStateUF, FlagComponent&gt;</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">Direct access to all flag components</p>
+                                </div>
+                                <div className="bg-muted rounded-lg p-3 border border-border">
+                                    <p className="text-foreground text-sm">
+                                        <span className="text-primary font-bold">FLAG_VIEWBOXES: Record&lt;BRStateUF, string&gt;</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">ViewBox metadata for all 27 flags</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Separator className="bg-border" />
                         <div className="space-y-3">
                             <h4 className="font-semibold text-foreground">{t.docs.api.utils}</h4>
                             <div className="space-y-2">

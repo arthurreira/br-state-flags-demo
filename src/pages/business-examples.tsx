@@ -1,7 +1,10 @@
 import { statesData, getStateName, getRegionName } from 'br-state-flags';
 import * as Flags from 'br-state-flags';
+import type { BRStateUF } from 'br-state-flags';
 import { Building2, Clock, Landmark, ShoppingCart, Globe, Briefcase, TrendingUp, BarChart3 } from 'lucide-react';
 import { useLanguage } from '../lib/i18n/language-context';
+import { resolveFlagComponent } from '../lib/flag-resolver';
+import { validateLocale } from '../lib/validation';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { ChartContainer, ChartTooltip } from '../components/ui/chart';
 
@@ -40,9 +43,9 @@ export default function BusinessExamples() {
                     </p>
 
                     <div className="flex justify-center gap-2 mt-8">
-                        <button onClick={() => setLocale('fi')} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'fi' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>Suomi 🇫🇮</button>
-                        <button onClick={() => setLocale('en')} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'en' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>English 🇺🇸</button>
-                        <button onClick={() => setLocale('pt-BR')} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'pt-BR' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>Português 🇧🇷</button>
+                        <button onClick={() => setLocale(validateLocale('fi'))} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'fi' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>Suomi 🇫🇮</button>
+                        <button onClick={() => setLocale(validateLocale('en'))} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'en' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>English 🇺🇸</button>
+                        <button onClick={() => setLocale(validateLocale('pt-BR'))} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${locale === 'pt-BR' ? 'bg-primary text-primary-foreground' : 'bg-secondary hover:bg-secondary/80'}`}>Português 🇧🇷</button>
                     </div>
                 </div>
 
@@ -79,14 +82,27 @@ export default function BusinessExamples() {
                                 <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.enterprise.dashboard.hubs}</h3>
                                 <div className="space-y-3">
                                     {logisticsCompany.hubs.map(hub => {
-                                        const Flag = (Flags as any)[hub];
-                                        const state = statesData[hub as keyof typeof statesData];
+                                        const resolution = resolveFlagComponent(hub);
+                                        const { component: FlagComponent, viewBox } = resolution || { component: null, viewBox: undefined, isValid: false };
+                                        const state = statesData[hub as BRStateUF];
+                                        if (!state) return null;
+                                        
                                         return (
                                             <div key={hub} className="flex items-center gap-3 p-3 bg-background border border-border/50 rounded-xl hover:border-primary/30 transition-colors">
-                                                <Flag className="w-10 h-6 rounded border border-border/50" />
+                                                {FlagComponent ? (
+                                                    <FlagComponent 
+                                                        className="w-10 h-6 rounded border border-border/50" 
+                                                        viewBox={viewBox}
+                                                        preserveAspectRatio="xMidYMid meet"
+                                                    />
+                                                ) : (
+                                                    <div className="w-10 h-6 rounded border border-border/50 bg-muted flex items-center justify-center text-xs font-bold">
+                                                        {hub}
+                                                    </div>
+                                                )}
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-bold leading-none mb-1 text-foreground">{getStateName(hub as any, locale)}</p>
-                                                    <p className="text-[10px] text-muted-foreground uppercase">{getRegionName(state.region, locale)}</p>
+                                                    <p className="text-sm font-bold leading-none mb-1 text-foreground">{getStateName(hub as BRStateUF, locale)}</p>
+                                                    <p className="text-[10px] text-muted-foreground uppercase">{getRegionName(state.region as any, locale)}</p>
                                                 </div>
                                                 <TrendingUp className="w-4 h-4 text-green-500" />
                                             </div>

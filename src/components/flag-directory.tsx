@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
-import * as Flags from 'br-state-flags';
+import { useState, useMemo, memo } from 'react';
 import { statesData, getStateName, getRegionName } from 'br-state-flags';
 import type { Locale, BRStateData } from 'br-state-flags';
 import { Search, Info, MapPin, Users, Maximize2, Clock, Globe, ExternalLink, Compass } from 'lucide-react';
 import { REGIONS_CONFIG } from '../lib/constants';
 import { useLanguage } from '../lib/i18n/language-context';
+import { resolveFlagComponent } from '../lib/flag-resolver';
+import { formatNumber } from '../lib/format-utils';
+import { isValidRegion } from '../lib/validation';
 import {
     Sheet,
     SheetContent,
@@ -19,63 +21,36 @@ import {
     TooltipTrigger,
 } from './ui/tooltip';
 
-// Mapping of flag viewBoxes to fix scaling issues in components missing them
-const FLAG_VIEWBOXES: Record<string, string> = {
-    AC: "0 0 500 350",
-    AL: "0 0 175.006 116.671",
-    AM: "0 0 2100 1500",
-    AP: "0 0 1000 700",
-    BA: "0 0 1500 1000",
-    CE: "-200 -140 400 280",
-    DF: "0 0 1453.846 1050",
-    ES: "0 0 1320 924",
-    GO: "0 0 560 392",
-    MA: "0 0 1350 900",
-    MG: "0 0 5120 3072",
-    MS: "0 0 1000 700",
-    MT: "0 0 2000 1400",
-    PA: "0 0 900 600",
-    PB: "0 0 6000 4200",
-    PE: "0 0 540 360",
-    PI: "0 0 1950 1300",
-    PR: "0 0 2500 1748",
-    RJ: "-1000 -700 2000 1400",
-    RN: "0 0 900 600",
-    RO: "-1000 -700 2000 1400",
-    RR: "0 0 2000 1400",
-    RS: "-1000 -700 2000 1400",
-    SC: "-418 -304 836 608",
-    SE: "0 0 1000 700",
-    SP: "0 0 1950 1300",
-    TO: "0 0 20 14"
-};
-
-const RegionBadge = ({ region, locale }: { region: any; locale: Locale }) => {
-    const config = REGIONS_CONFIG[region as keyof typeof REGIONS_CONFIG];
-    const translatedRegion = getRegionName(region, locale);
+const RegionBadge = memo(({ region, locale }: { region: string; locale: Locale }) => {
+    const config = isValidRegion(region) ? REGIONS_CONFIG[region as keyof typeof REGIONS_CONFIG] : null;
+    const translatedRegion = getRegionName(region as any, locale);
     return (
         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${config?.bgClass || 'bg-secondary text-secondary-foreground'}`}>
             {translatedRegion}
         </span>
     );
-};
+});
+RegionBadge.displayName = 'RegionBadge';
 
 const StateDetailReport = ({ state, locale, flagViewBox }: { state: BRStateData; locale: Locale; flagViewBox?: string }) => {
-    const FlagComponent = (Flags as any)[state.uf];
+    const resolution = resolveFlagComponent(state.uf);
+    const { component: FlagComponent, viewBox } = resolution || { component: null, viewBox: undefined, isValid: false };
     const { t } = useLanguage();
-    const formatNumber = (num: number) => {
-        return new Intl.NumberFormat(locale === 'en' ? 'en-US' : locale === 'fi' ? 'fi-FI' : 'pt-BR').format(num);
-    };
+    const finalViewBox = flagViewBox || viewBox;
 
     return (
         <div className="flex flex-col h-full overflow-y-auto custom-scrollbar pt-8 pb-12 px-2">
             <div className="relative aspect-[16/10] rounded-[2rem] overflow-hidden border border-border/50 bg-secondary/10 shadow-2xl mb-12 group/flag">
-                {FlagComponent && (
+                {FlagComponent ? (
                     <FlagComponent
                         className="w-full h-full p-8 transition-transform duration-700 group-hover/flag:scale-110"
-                        viewBox={flagViewBox}
+                        viewBox={finalViewBox}
                         preserveAspectRatio="xMidYMid meet"
                     />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground font-black text-2xl">
+                        {state.uf}
+                    </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent pointer-events-none" />
             </div>
@@ -110,14 +85,14 @@ const StateDetailReport = ({ state, locale, flagViewBox }: { state: BRStateData;
                         <div className="p-8 bg-primary/5 border border-primary/20 rounded-[2.5rem] flex items-center justify-between">
                             <div className="space-y-1">
                                 <p className="text-xs font-bold text-primary uppercase tracking-widest">{t.directory.report.resident}</p>
-                                <p className="text-4xl font-black tracking-tight">{formatNumber(state.population)}</p>
+                                <p className="text-4xl font-black tracking-tight">{formatNumber(state.population, locale)}</p>
                             </div>
                             <Users className="w-12 h-12 text-primary/20" />
                         </div>
                         <div className="p-8 bg-secondary/5 border border-secondary/20 rounded-[2.5rem] flex items-center justify-between">
                             <div className="space-y-1">
                                 <p className="text-xs font-bold text-secondary-foreground/60 uppercase tracking-widest">{t.directory.report.territorial}</p>
-                                <p className="text-4xl font-black tracking-tight">{formatNumber(state.area)} <span className="text-lg font-bold opacity-40">km²</span></p>
+                                <p className="text-4xl font-black tracking-tight">{formatNumber(state.area, locale)} <span className="text-lg font-bold opacity-40">km²</span></p>
                             </div>
                             <Maximize2 className="w-12 h-12 text-secondary-foreground/10" />
                         </div>
@@ -181,10 +156,6 @@ export default function FlagDirectory() {
         });
     }, [searchQuery, selectedRegion, currentLocale]);
 
-    const formatNumber = (num: number) => {
-        return new Intl.NumberFormat(currentLocale === 'en' ? 'en-US' : currentLocale === 'fi' ? 'fi-FI' : 'pt-BR').format(num);
-    };
-
     return (
         <TooltipProvider>
             <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -229,9 +200,11 @@ export default function FlagDirectory() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredStates.map((state) => {
-                        const FlagComponent = (Flags as any)[state.uf];
-                        const flagViewBox = FLAG_VIEWBOXES[state.uf];
-                        const regionColor = REGIONS_CONFIG[state.region as keyof typeof REGIONS_CONFIG]?.color || '#ccc';
+                        const resolution = resolveFlagComponent(state.uf);
+                        const { component: FlagComponent, viewBox: flagViewBox } = resolution || { component: null, viewBox: undefined, isValid: false };
+                        const regionColor = isValidRegion(state.region) 
+                            ? REGIONS_CONFIG[state.region as keyof typeof REGIONS_CONFIG]?.color || '#ccc'
+                            : '#ccc';
                         const localizedName = getStateName(state.uf, currentLocale);
 
                         return (
@@ -290,7 +263,7 @@ export default function FlagDirectory() {
                                                 <Maximize2 className="w-3 h-3" />
                                                 {t.directory.card.area}
                                             </div>
-                                            <span className="text-[10px] font-bold text-foreground">{formatNumber(Math.round(state.area))} km²</span>
+                                            <span className="text-[10px] font-bold text-foreground">{formatNumber(Math.round(state.area), currentLocale)} km²</span>
                                         </div>
                                         <div className="flex flex-col gap-1 p-2.5 bg-secondary/20 rounded-2xl border border-border/50 hover:bg-secondary/40 transition-colors">
                                             <div className="flex items-center gap-1.5 text-[10px] uppercase font-black text-muted-foreground/60 tracking-wider">

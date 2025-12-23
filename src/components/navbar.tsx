@@ -3,6 +3,7 @@ import { cn } from '../lib/utils';
 import { MapIcon, BookOpenIcon, Github, Moon, Sun, Globe, Menu, Briefcase } from 'lucide-react';
 import { useTheme } from '../lib/theme-provider';
 import { useLanguage } from '../lib/i18n/language-context';
+import { validateLocale } from '../lib/validation';
 import { Button } from './ui/button';
 import {
   Sheet,
@@ -73,7 +74,7 @@ export default function Navbar() {
               {languages.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => setLocale(lang.code as any)}
+                  onClick={() => setLocale(validateLocale(lang.code))}
                   className={cn(
                     "px-2 py-1 rounded-lg text-[10px] font-black transition-all",
                     locale === lang.code
