@@ -5,6 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://beamanalytics.b-cdn.net; connect-src 'self' https://beamanalytics.b-cdn.net https://*.beamanalytics.io; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; frame-ancestors 'self';" />
+    
     <!-- SEO Meta Tags -->
     <title>Brazil State Explorer - Interactive Flags & Data</title>
     <meta name="description" content="Explore Brazilian states with interactive flags, detailed information, population data, timezones, and regional maps. Learn about each state's geography, culture, and demographics." />
@@ -31,6 +34,8 @@
     <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://beamanalytics.b-cdn.net" />
+    <link rel="dns-prefetch" href="https://beamanalytics.b-cdn.net" />
     
     <!-- Icons -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

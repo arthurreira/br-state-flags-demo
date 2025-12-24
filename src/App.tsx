@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/navbar';
 import HomePage from './pages/home';
 import DemoPage from './pages/demo';
@@ -9,11 +9,28 @@ import { ThemeProvider } from './lib/theme-provider';
 import { LanguageProvider } from './lib/i18n/language-context';
 import { injectSchema } from './lib/seo';
 import { ErrorBoundary } from './components/error-boundary';
+import { trackPageView } from './lib/analytics';
+
+// Component to track route changes
+function RouteTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Track page view on route change
+    const path = location.pathname || '/';
+    trackPageView(path);
+  }, [location.pathname]);
+
+  return null;
+}
 
 export default function App() {
   useEffect(() => {
     // Inject JSON-LD schema for SEO
     injectSchema();
+    
+    // Track initial page view
+    trackPageView(window.location.pathname || '/');
   }, []);
 
   return (
@@ -29,6 +46,7 @@ export default function App() {
       <ThemeProvider>
         <LanguageProvider>
           <Router>
+            <RouteTracker />
             <div className="flex flex-col min-h-screen bg-background text-foreground">
               <Navbar />
               <div className="flex-1">

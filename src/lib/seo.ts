@@ -2,14 +2,14 @@ export const generateSchema = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Brazil State Explorer",
+    "name": "Brazil State Explorer ",
     "description": "Interactive explorer for Brazilian states with flags, maps, and detailed data",
     "url": "https://br-state-flags-demo.arthurreira.dev",
     "applicationCategory": "EducationalApplication",
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "USD"
+      "priceCurrency": "EUR"
     },
     "author": {
       "@type": "Person",
@@ -36,7 +36,7 @@ export const injectSchema = () => {
   document.head.appendChild(script);
 };
 
-export const updatePageMeta = (title: string, description: string, image?: string) => {
+export const updatePageMeta = (title: string, description: string, image?: string, path?: string) => {
   // Update title
   document.title = `${title} | Brazil State Explorer`;
 
@@ -55,6 +55,22 @@ export const updatePageMeta = (title: string, description: string, image?: strin
   const ogDescription = document.querySelector('meta[property="og:description"]');
   if (ogDescription) {
     ogDescription.setAttribute("content", description);
+  }
+
+  // Update OG URL if path provided
+  if (path) {
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      const baseUrl = 'https://br-state-flags-demo.arthurreira.dev';
+      ogUrl.setAttribute("content", `${baseUrl}${path}`);
+    }
+
+    // Update canonical URL
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      const baseUrl = 'https://br-state-flags-demo.arthurreira.dev';
+      canonical.setAttribute("href", `${baseUrl}${path}`);
+    }
   }
 
   if (image) {

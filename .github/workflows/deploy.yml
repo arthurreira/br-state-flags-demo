@@ -22,6 +22,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_BEAM_TOKEN: ${{ secrets.VITE_BEAM_TOKEN }}
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
