@@ -2,15 +2,15 @@
 
 An interactive map application showcasing Brazil's states and their flags.
 
-## 🌐 Live Demo
+##  Live Demo
 
 **[View Live Demo →](https://br-state-flags-demo.arthurreira.dev/#/)**
 
 ### Quick Links
-- 🏠 [Home](https://br-state-flags-demo.arthurreira.dev/#/) - Main landing page
-- 🗺️ [Demo](https://br-state-flags-demo.arthurreira.dev/#/demo) - Interactive state explorer
-- 💼 [Business Examples](https://br-state-flags-demo.arthurreira.dev/#/business-examples) - Use cases and implementations
-- 📚 [Documentation](https://br-state-flags-demo.arthurreira.dev/#/docs) - API docs and guides
+-  [Home](https://br-state-flags-demo.arthurreira.dev/#/) - Main landing page
+-  [Demo](https://br-state-flags-demo.arthurreira.dev/#/demo) - Interactive state explorer
+-  [Business Examples](https://br-state-flags-demo.arthurreira.dev/#/business-examples) - Use cases and implementations
+-  [Documentation](https://br-state-flags-demo.arthurreira.dev/#/docs) - API docs and guides
 
 ## Features
 
